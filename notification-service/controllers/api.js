@@ -38,3 +38,12 @@ export const getEpisode = async (fanficId, episodeNumber) => {
   );
   return response.data;
 };
+
+export const sendDailyDigest = async (userId, digest) => {
+  try {
+    await axios.post(`${API_BASE_URL}/users/${userId}/emails:sendDailyDigest`, digest);
+    console.log(`Successfully sent digest to ${userId}`);
+  } catch (error) {
+    console.error(`Error sending digest to ${userId}:`, error);
+  }
+};

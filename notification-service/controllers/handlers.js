@@ -36,19 +36,27 @@ export const handleEpisodePublish = async (event) => {
   const fanfic = await getFanfic(fanficId);
   const followers = await getFanficFollowers(fanficId);
 
-  // Loop through each follower and send a notification
-  // have to change this loop function  0000000000000000000
-  for (const followerId of followers) {
-    const notification = {
-      userId: followerId,
-      notificationType: "NEW_EPISODE",
-      title: `New Episode in "${fanfic.fanficName}"`,
-      body: `Episode ${episodeNumber} is now available for "${fanfic.fanficName}".`,
-    };
+  
+  const messages = followers.map((followerId) => ({
+  value: JSON.stringify({
+    userId: followerId,
 
-    await sendNotification(notification);
-    console.log("New Episode notification sent for", followerId);
-  }
+    notificationType: "NEW_EPISODE",
+
+    title: `New Episode in "${fanfic.fanficName}"`,
+
+    body: `Episode ${episodeNumber} is now available for "${fanfic.fanficName}".`,
+  }),
+}));
+
+await producer.send({
+  topic: "notifications",
+  messages,
+});
+
+console.log(
+  `${messages.length} notifications pushed to Kafka`
+);
 };
 
 // made object for notification here because this is a one to one event and above is one to many 
@@ -75,4 +83,22 @@ export const handleEpisodeComment = async (message) => {
   }
 };
 
-//
+export const handleUserFollow = async (message) => {
+  try {
+    const { userId, followerId } = message;
+
+    const follower = await getUser(followerId);
+
+    const notification = new Notification({
+      userId: userId,
+      notificationType: "USER_FOLLOW",
+      title: "You have a new follower!",
+      body: `${follower.nickname} is now following you.`,
+    });
+
+    await notification.save();
+    console.log("Notification saved for new follower:", notification);
+  } catch (error) {
+    console.error("Error handling new follower notification:", error);
+  }
+};

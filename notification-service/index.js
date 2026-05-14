@@ -1,7 +1,10 @@
-import { connectDB } from "./db.js";
 import { createTopic } from "./kafka.js";
-import { startConsumer } from "./consumer.js";
 import { startNotificationConsumer } from "./notification-consumer.js";
+import { connectDB } from "./db/db.js";
+import { startConsumer } from "./controllers/consumer.js";
+//this will just tell nodejs to run this file and it will start 
+// the server and the cron job for sending digests
+import "./scheduler.js";
 
 
 const startServer = async () => {

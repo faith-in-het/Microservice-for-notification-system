@@ -3,6 +3,7 @@ import {
   handleFanficPublish,
   handleEpisodePublish,
   handleEpisodeComment,
+  handleUserFollow,
 } from "./handlers.js";
 
 const consumer = kafka.consumer({ groupId: "notification-group" });
@@ -20,11 +21,14 @@ export const startConsumer = async () => {
         case "FANFIC_PUBLISH":
           await handleFanficPublish(data);
           break;
-        case "NEW_EPISODE":
+        case "EPISODE_PUBLISH":
           await handleEpisodePublish(data);
           break;
         case "EPISODE_COMMENT":
           await handleEpisodeComment(data);
+          break;
+        case "USER_FOLLOW":
+          await handleUserFollow(data);
           break;
         default:
           console.log("Unknown message type:", type);
