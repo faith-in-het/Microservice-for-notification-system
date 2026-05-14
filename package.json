@@ -1,0 +1,23 @@
+{
+  "name": "fanon-assignment",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Fanon Assignment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "producer": "node producer/producer.js",
+    "server": "node notification-service/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.16.1",
+    "express": "^5.2.1",
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
