@@ -3,6 +3,7 @@ import { createTopic } from "./kafka.js";
 import { startConsumer } from "./consumer.js";
 import { startNotificationConsumer } from "./notification-consumer.js";
 
+
 const startServer = async () => {
   await connectDB();
 
