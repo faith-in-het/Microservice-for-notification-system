@@ -1,41 +1,34 @@
 import { kafka } from "./kafka.js";
-import { handleFanficPublish, handleEpisodePublish} from "../handlers.js";
+import {
+  handleFanficPublish,
+  handleEpisodePublish,
+  handleEpisodeComment,
+} from "./handlers.js";
 
 const consumer = kafka.consumer({ groupId: "notification-group" });
 
 export const startConsumer = async () => {
   await consumer.connect();
-
-  await consumer.subscribe({
-    topic: "fanfic-events",
-    fromBeginning: true,
-  });
-
-  // await consumer.run({
-  //   eachMessage: async ({ message }) => {
-  //     const event = JSON.parse(message.value.toString());
-
-  //     console.log("Event Received", event);
-
-  //     if (event.type === "FANFIC_PUBLISH") {
-  //       await handleFanficPublish(event);
-  //     }
-  //   },
-  // });
+  await consumer.subscribe({ topic: "fanfic-events", fromBeginning: true });
 
   await consumer.run({
-  eachMessage: async ({ message }) => {
-        const event = JSON.parse(message.value.toString());
+    eachMessage: async ({ message }) => {
+      const { type, ...data } = JSON.parse(message.value.toString());
+      console.log(`Event Received: ${type}`, data);
 
-        console.log("Event Received", event);
-
-        // Check the event type and call the correct handler
-        if (event.type === "FANFIC_PUBLISH") {
-        await handleFanficPublish(event);
-        } else if (event.type === "EPISODE_PUBLISH") {
-        await handleEpisodePublish(event);
-        }
+      switch (type) {
+        case "FANFIC_PUBLISH":
+          await handleFanficPublish(data);
+          break;
+        case "NEW_EPISODE":
+          await handleEpisodePublish(data);
+          break;
+        case "EPISODE_COMMENT":
+          await handleEpisodeComment(data);
+          break;
+        default:
+          console.log("Unknown message type:", type);
+      }
     },
-    });
-
+  });
 };

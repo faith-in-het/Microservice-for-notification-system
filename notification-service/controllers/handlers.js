@@ -51,4 +51,28 @@ export const handleEpisodePublish = async (event) => {
   }
 };
 
+// made object for notification here because this is a one to one event and above is one to many 
+export const handleEpisodeComment = async (message) => {
+  try {
+    const { fanficId, commenterId, commentText } = message;
+
+    const fanfic = await getFanfic(fanficId);
+    const publisherId = fanfic.author;
+
+    const commenter = await getUser(commenterId);
+
+    const notification = new Notification({
+      userId: publisherId,
+      notificationType: "EPISODE_COMMENT",
+      title: `New comment on your episode`,
+      body: `${commenter.username} commented: "${commentText}" in "${fanfic.title}"`,
+    });
+
+    await notification.save();
+    console.log("Notification saved for new comment:", notification);
+  } catch (error) {
+    console.error("Error handling new comment notification:", error);
+  }
+};
+
 //
