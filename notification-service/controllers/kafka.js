@@ -8,23 +8,23 @@ const kafka = new Kafka({
   brokers: [process.env.KAFKA_BROKER] // e.g., "localhost:9092" location of kafka broker 
 });
 
-async function createTopic() {
+async function createTopic(topic) {
   const admin = kafka.admin();
   console.log("Admin connecting...");
   await admin.connect();
   console.log("Admin Connection Success...");
 
-  console.log("Creating Topic [notifications]");
+  console.log(`Creating Topic [${topic}]`);
   await admin.createTopics({
     topics: [
       {
-        topic: "notifications",
+        topic: topic,
         numPartitions: 2,
         replicationFactor: 1,
       },
     ],
   });
-  console.log("Topic Created Success [notifications]");
+  console.log(`Topic Created Success [${topic}]`);
 
   await admin.disconnect();
 }
