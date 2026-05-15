@@ -5,6 +5,7 @@ import {
   handleEpisodeComment,
   handleUserFollow,
 } from "./handlers.js";
+import { addJob, removeJob } from "./buffer.js";
 
 const consumer = kafka.consumer({ groupId: "notification-group" });
 
@@ -19,16 +20,28 @@ export const startConsumer = async () => {
 
       switch (type) {
         case "FANFIC_PUBLISH":
+          // This is handled instantly as per requirements
           await handleFanficPublish(data);
           break;
         case "EPISODE_PUBLISH":
-          await handleEpisodePublish(data);
+          // Add to buffer instead of handling instantly
+          addJob(data.episodeId, type, data);
           break;
         case "EPISODE_COMMENT":
-          await handleEpisodeComment(data);
+          // Add to buffer instead of handling instantly
+          addJob(data.commentId, type, data);
           break;
         case "USER_FOLLOW":
+          // This is handled instantly
           await handleUserFollow(data);
+          break;
+        case "EPISODE_DELETE":
+          // Remove from buffer to cancel notification
+          removeJob(data.episodeId);
+          break;
+        case "COMMENT_DELETE":
+          // Remove from buffer to cancel notification
+          removeJob(data.commentId);
           break;
         default:
           console.log("Unknown message type:", type);
