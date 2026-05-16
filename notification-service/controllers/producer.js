@@ -1,16 +1,35 @@
 import { kafka } from "./kafka.js";
 
-const producer = kafka.producer();
+export const producer = kafka.producer();
 
 export const sendNotification = async (notification) => {
   await producer.connect();
-  await producer.send({
-    topic: "notifications",
-    messages: [
-      {
-        value: JSON.stringify(notification),
-      },
-    ],
-  });
-  await producer.disconnect();
+  try {
+    await producer.send({
+      topic: "notifications",
+      messages: [
+        {
+          value: JSON.stringify(notification),
+        },
+      ],
+    });
+  } finally {
+    await producer.disconnect();
+  }
+};
+
+export const sendNotificationBatch = async (notifications) => {
+  await producer.connect();
+  try {
+    const messages = notifications.map((notification) => ({
+      value: JSON.stringify(notification),
+    }));
+
+    await producer.send({
+      topic: "notifications",
+      messages,
+    });
+  } finally {
+    await producer.disconnect();
+  }
 };

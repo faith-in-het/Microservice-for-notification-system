@@ -1,6 +1,5 @@
-import { getFanfic, getFanficFollowers, getUser } from "./api.js";
-import {  getFanfic, getFanficFollowers, getUser, getEpisode, } from "./api.js";
-import { sendNotification } from "./producer.js";
+import { getFanfic, getFanficFollowers, getUser,getEpisode } from "./api.js";
+import { sendNotificationBatch, producer } from "./producer.js";
 
 export const handleFanficPublish = async (event) => {
   const { fanficId } = event;
@@ -32,31 +31,21 @@ console.log(
 export const handleEpisodePublish = async (event) => {
   const { fanficId, episodeNumber } = event;
 
-  // Get the fanfic details and its followers
+  // Get the fanfic, followers, and episode details
   const fanfic = await getFanfic(fanficId);
   const followers = await getFanficFollowers(fanficId);
+  const episode = await getEpisode(fanficId, episodeNumber);
 
-  
-  const messages = followers.map((followerId) => ({
-  value: JSON.stringify({
+  const notifications = followers.map((followerId) => ({
     userId: followerId,
-
     notificationType: "NEW_EPISODE",
-
     title: `New Episode in "${fanfic.fanficName}"`,
+    body: `Episode ${episodeNumber}: "${episode.title}" is now available.`,
+  }));
 
-    body: `Episode ${episodeNumber} is now available for "${fanfic.fanficName}".`,
-  }),
-}));
+  await sendNotificationBatch(notifications);
 
-await producer.send({
-  topic: "notifications",
-  messages,
-});
-
-console.log(
-  `${messages.length} notifications pushed to Kafka`
-);
+  console.log(`${notifications.length} notifications pushed to Kafka`);
 };
 
 // made object for notification here because this is a one to one event and above is one to many 
