@@ -1,21 +1,28 @@
-### Task 1 work flow
+*Developing a Notification Microservice System for handling and managing user notifications efficiently in a scalable architecture.
 
-For sending notification to users we use Kafka 
-and for notification to publisher of fanFic we have to make opbject for each Publisher and this is basic flow of the Task.
+*Using Kafka as the message broker to enable asynchronous communication between backend services and the notification service.
 
+*Creating separate notification objects for each publisher/user to support personalized and independent notification handling.
+
+*Implementing node-cron for scheduling automated background jobs and recurring tasks.
+
+*Running a scheduled job in scheduler.js every 24 hours to execute a reporting script.
+
+*The reporting script connects to the database and generates daily analytics, including:
+
+*Number of unique users notified
+
+*Breakdown of notification categories/types
+
+*Maintaining clean architecture by separating scheduling logic from reporting and database logic.
+
+*Implementing a buffering/grace-period mechanism before sending notifications to users.
+
+*Preventing notifications from being sent for content that is deleted immediately after being posted.
+
+*Ensuring notifications are only delivered if the content still exists after the buffer period, improving reliability and user experience.
 
 ![alt text](image.png)
-
-### Task 2 Flow
-
-Used `node-cron` for scheduling background jobs such as:
-A scheduled job in scheduler.js runs a reporting script once every
-24 hours. This script connects to the database to count key metrics from the last day, such as the number of unique users notified and a breakdown of notification types. The scheduler simply acts as a timer, keeping the database logic separate in the reporting script.
-
-
-### Task 3: Notification Buffering and Grace Period
-
-To prevent sending notifications for content that is deleted immediately after being posted, this service implements a buffering mechanism. This provides a "grace period" for actions, ensuring users don't receive notifications for content that was quickly removed.
 
 **How It Works:**
 
