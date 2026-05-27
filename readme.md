@@ -30,3 +30,61 @@ To prevent sending notifications for content that is deleted immediately after b
 **Data Structure Choice:**
 
 A JavaScript `Map` was chosen for the buffer due to its high performance for this specific task. It provides instant O(1) time complexity for adding, retrieving, and—most importantly—deleting jobs by their unique ID. This ensures that the cancellation process is fast and efficient, even under heavy load. 
+
+### Event Types used and End points used in the code
+
+### Event types and their corresponding eventDetails shape
+FANFIC_PUBLISH
+fanficId: string (fanfic_id)
+
+EPISODE_PUBLISH
+fanficId: string(fanfic_id)
+episodeNumber: number
+
+FANFIC_FOLLOW
+fanficId: string (fanfic_id)
+followerId: string (user_id)
+
+EPISODE_COMMENT
+fanficId: string(fanfic_id)
+commentId: string (comment_id)
+episodeNumber: number
+commenterId: string (user_id)
+commentText: string
+
+USER_FOLLOW
+	userId: string (user_id)
+	followerId: string (user_id)
+
+UNSUBSCRIBE
+	userId: string (user_id)
+
+RESUBSCRIBE
+	userId: string (user_id)
+
+DELETE_EPISODE
+fanficId: string (fanfic_id)
+
+DELETE_COMMENT
+commentId: string (comment_id) 
+
+### Upstream API Handlers
+
+GET /users/{user_id}/followers
+returns {page: Array<string> (user_id), cursor: string, hasMore: boolean}
+
+GET /fanfics/{fanfic_id}/followers
+returns {page: Array<string> (user_id), cursor: string, hasMore: boolean}
+
+GET /fandoms/{fandom_id}/followers
+returns {page: Array<string> (user_id), cursor: string, hasMore: boolean}
+
+GET /fanfics/{fanfic_id}
+returns {creators: Array<string> (user_id), fanficName: string, fanficDescription: string, fandoms: Array<string> (fandom_id)}
+
+GET /fanfics/{fanfic_id}/episodes/{episode_number}
+returns {episodeDescription: string}
+Note: episodes are always attributed to the same creators as of the fanfic to which they belong.
+
+GET /users/{user_id}
+returns {nickname: string}
