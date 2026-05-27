@@ -1,6 +1,10 @@
 import { kafka } from "./kafka.js";
 
-export const producer = kafka.producer();
+export const producer = kafka.producer({
+  allowAutoTopicCreation: false,
+  transactionTimeout: 30000,
+  idempotent: true,
+});
 
 export const sendNotification = async (notification) => {
   await producer.connect();

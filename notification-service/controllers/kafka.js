@@ -29,7 +29,7 @@ async function createTopic(topic) {
   await admin.disconnect();
 }
 
-export const producer = kafka.producer();
+
 
 export const consumer = kafka.consumer({
   groupId: "notification-group" // consumer group 
